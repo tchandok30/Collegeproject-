@@ -1,0 +1,422 @@
+/* Result Section Styles */
+
+.result-container {
+  min-height: 100vh;
+  background: #FAFAFA;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Navigation */
+.result-topnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  border-bottom: 1px solid #DDDDDD;
+  padding: 15px 30px;
+  height: 80px;
+}
+
+.topnav-logo {
+  font-size: 13px;
+  font-weight: 700;
+  color: #6B2C2C;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.topnav-menu {
+  display: flex;
+  gap: 30px;
+  flex: 1;
+  margin-left: 40px;
+}
+
+.topnav-item {
+  text-decoration: none;
+  color: #666666;
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 3px solid transparent;
+  padding-bottom: 5px;
+  transition: all 0.2s;
+}
+
+.topnav-item:hover {
+  color: #1A1A1A;
+}
+
+.topnav-item.active {
+  color: #6B2C2C;
+  border-bottom-color: #6B2C2C;
+}
+
+.topnav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.live-status {
+  font-size: 11px;
+  font-weight: 700;
+  color: #999999;
+  letter-spacing: 0.5px;
+}
+
+.topnav-icon {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Main Content */
+.result-content {
+  display: flex;
+  gap: 30px;
+  padding: 40px;
+  flex: 1;
+}
+
+.content-left {
+  flex: 1;
+}
+
+.content-right {
+  width: 280px;
+}
+
+/* Success Header */
+.success-header {
+  margin-bottom: 40px;
+}
+
+.success-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 8px 0;
+}
+
+.success-message {
+  font-size: 14px;
+  color: #666666;
+  margin: 0;
+}
+
+/* Allocation Success Card */
+.allocation-success {
+  background: white;
+  border: 1px solid #DDDDDD;
+  padding: 30px;
+  margin-bottom: 40px;
+}
+
+.success-label-section {
+  padding-left: 20px;
+  border-left: 4px solid #6B2C2C;
+  margin-bottom: 30px;
+}
+
+.success-label {
+  font-size: 11px;
+  color: #999999;
+  margin: 0;
+  letter-spacing: 1px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.room-number-large {
+  font-size: 48px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0;
+  letter-spacing: -1px;
+}
+
+.allocation-brief {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.brief-item {
+  text-align: center;
+}
+
+.brief-label {
+  font-size: 10px;
+  color: #999999;
+  margin: 0;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.brief-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0;
+}
+
+/* Roommates Section */
+.roommates-section {
+  margin-bottom: 40px;
+}
+
+.roommates-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 20px 0;
+}
+
+.roommates-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.roommate-card {
+  background: white;
+  border: 1px solid #DDDDDD;
+  padding: 15px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  transition: all 0.2s;
+}
+
+.roommate-card:hover {
+  border-color: #6B2C2C;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.roommate-avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 4px;
+  background: #E8E8E8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #666666;
+}
+
+.avatar-initials {
+  font-size: 14px;
+}
+
+.roommate-info {
+  flex: 1;
+}
+
+.roommate-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0;
+}
+
+.roommate-batch {
+  font-size: 11px;
+  color: #999999;
+  margin: 4px 0;
+  letter-spacing: 0.3px;
+}
+
+.roommate-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 3px 8px;
+  background: #6B2C2C;
+  color: white;
+  margin-top: 5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* Buttons */
+.btn-download {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px;
+  background: #6B2C2C;
+  color: white;
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: background 0.2s;
+}
+
+.btn-download:hover {
+  background: #5A1F1F;
+}
+
+/* Details Card (Right Sidebar) */
+.details-card {
+  background: white;
+  border: 1px solid #DDDDDD;
+  padding: 25px;
+}
+
+.details-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #999999;
+  margin: 0 0 20px 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.details-grid {
+  margin-bottom: 25px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #EEEEEE;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 12px;
+  color: #999999;
+  margin: 0;
+  font-weight: 600;
+}
+
+.detail-value {
+  font-size: 12px;
+  color: #1A1A1A;
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
+
+.btn-view-map {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: white;
+  border: 1px solid #999999;
+  color: #1A1A1A;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.btn-view-map:hover {
+  background: #F5F5F5;
+  border-color: #6B2C2C;
+  color: #6B2C2C;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .result-content {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .content-right {
+    width: 100%;
+  }
+
+  .allocation-brief {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .result-content {
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .success-header h1 {
+    font-size: 24px;
+  }
+
+  .room-number-large {
+    font-size: 36px;
+  }
+
+  .roommates-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .allocation-brief {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .topnav-menu {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .result-topnav {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 10px;
+  }
+
+  .result-content {
+    padding: 15px;
+  }
+
+  .success-header h1 {
+    font-size: 20px;
+  }
+
+  .room-number-large {
+    font-size: 32px;
+  }
+
+  .allocation-brief {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .brief-label {
+    font-size: 9px;
+  }
+
+  .brief-value {
+    font-size: 14px;
+  }
+
+  .topnav-actions {
+    width: 100%;
+    justify-content: center;
+    gap: 10px;
+  }
+}
