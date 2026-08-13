@@ -1,31 +1,17 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Navigate,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
-
-import { AllocationRoutes } from "./room_allocation";
-import WardenAllocationPage from "./room_allocation/pages/WardenAllocationPage";
 
 /* ================= AUTH ================= */
 import Login from "./auth/login";
 import Signup from "./auth/signup";
 import OtpVerification from "./auth/OtpVerification";
-
-/* ================= FACE RECOGNITION ================= */
-import EnrollFace from "./face_recognition/EnrollFace";
-import VerifyFace from "./face_recognition/VerifyFace";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 /* ================= STUDENT ================= */
 import OutpassLayout from "./student/outpasses";
-
-/* ================= COMPLAINT ================= */
-import Complaint from "./complaint/complaint";
-import ComplaintForm from "./complaint/ComplaintForm";
 
 /* ================= ATTENDANT ================= */
 import AdminLayout from "./attendant/AdminLayout";
@@ -40,8 +26,10 @@ import GuardLayout from "./guard/GuardLayout.jsx";
 import Dashboard from "./guard/Dashboard.jsx";
 import GateLogs from "./guard/GateLogs.jsx";
 import DayScholar from "./guard/DayScholar.jsx";
-import ChiefWardenAllocationPage from "./chief-warden/chief-warden.tsx";
+
+/* ================= WARDEN / CHIEF WARDEN ================= */
 import Warden from "./warden/warden";
+import ChiefWardenAllocationPage from "./chief-warden/chief-warden.tsx";
 
 /* ================= LOGS ================= */
 import LogsPage from "./logs/LogsPage.jsx";
@@ -67,139 +55,103 @@ function ErrorPage() {
   );
 }
 
-// Check if AllocationRoutes is an array of objects or single route element
-const parsedAllocationRoutes = Array.isArray(AllocationRoutes)
-  ? AllocationRoutes
-  : [AllocationRoutes];
-
 /* ================= ROUTES ================= */
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Navigate to="/signin" replace />,
-  },
-  {
-    path: "/signin",
-    element: <Login />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/signup",
-    element: <Signup />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/verify-otp",
-    element: <OtpVerification />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/face/enroll",
-    element: <EnrollFace />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/face/verify",
-    element: <VerifyFace />,
-    errorElement: <ErrorPage />,
-  },
+  { path: "/", element: <Navigate to="/signin" replace /> },
+
+  // ── Public (no auth) ───────────────────────────────────────────
+  { path: "/signin",     element: <Login />,           errorElement: <ErrorPage /> },
+  { path: "/signup",     element: <Signup />,          errorElement: <ErrorPage /> },
+  { path: "/verify-otp", element: <OtpVerification />, errorElement: <ErrorPage /> },
+
+  // ── Student ────────────────────────────────────────────────────
   {
     path: "/student",
-    element: <OutpassLayout />,
     errorElement: <ErrorPage />,
+    element: <ProtectedRoute allowedRoles={["student"]}><OutpassLayout /></ProtectedRoute>,
   },
-  {
-    path: "/complaint",
-    element: <Complaint />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/complaint-form",
-    element: <ComplaintForm />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/admin",
-    element: <Admin />,
-    errorElement: <ErrorPage />,
-  },
+
+  // ── Attendant ──────────────────────────────────────────────────
   {
     path: "/attendant",
-    element: <AdminLayout />,
     errorElement: <ErrorPage />,
+    element: <ProtectedRoute allowedRoles={["attendant"]}><AdminLayout /></ProtectedRoute>,
     children: [
-      {
-        index: true,
-        element: <Navigate to="/attendant/pending" replace />,
-      },
-      {
-        path: "pending",
-        element: <PendingPage />,
-      },
-      {
-        path: "approved",
-        element: <ApprovedPage />,
-      },
-      {
-        path: "rejected",
-        element: <RejectedPage />,
-      },
-      {
-        path: "complaints",
-        element: <ComplaintsPage />,
-      },
+      { index: true, element: <Navigate to="/attendant/pending" replace /> },
+      { path: "pending",    element: <PendingPage /> },
+      { path: "approved",   element: <ApprovedPage /> },
+      { path: "rejected",   element: <RejectedPage /> },
+      { path: "complaints", element: <ComplaintsPage /> },
     ],
   },
+
+  // ── Admin ──────────────────────────────────────────────────────
+  {
+    path: "/admin",
+    errorElement: <ErrorPage />,
+    element: (
+      <ProtectedRoute allowedRoles={["admin", "warden", "chief-warden"]}>
+        <Admin />
+      </ProtectedRoute>
+    ),
+  },
+
+  // ── Guard ──────────────────────────────────────────────────────
   {
     path: "/guard",
-    element: <GuardLayout />,
     errorElement: <ErrorPage />,
+    element: <ProtectedRoute allowedRoles={["guard"]}><GuardLayout /></ProtectedRoute>,
     children: [
-      {
-        index: true,
-        element: <Navigate to="/guard/dashboard" replace />,
-      },
-      {
-        path: "dashboard",
-        element: <Dashboard />,
-      },
-      {
-        path: "logs",
-        element: <GateLogs />,
-      },
-      {
-        path: "dayscholar",
-        element: <DayScholar />,
-      },
-
+      { index: true, element: <Navigate to="/guard/dashboard" replace /> },
+      { path: "dashboard",  element: <Dashboard /> },
+      { path: "logs",       element: <GateLogs /> },
+      { path: "dayscholar", element: <DayScholar /> },
     ],
   },
-  ...parsedAllocationRoutes,
+
+  // ── Warden ─────────────────────────────────────────────────────
   {
     path: "/warden",
-    element: <Warden />,
     errorElement: <ErrorPage />,
-  },
-  {
-    path: "/chief-warden",
-    element: <ChiefWardenAllocationPage />,
-    errorElement: <ErrorPage />,
+    element: (
+      <ProtectedRoute allowedRoles={["warden", "chief-warden"]}>
+        <Warden />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/wardenhostel",
-    element: <Warden />,
     errorElement: <ErrorPage />,
+    element: (
+      <ProtectedRoute allowedRoles={["warden", "chief-warden"]}>
+        <Warden />
+      </ProtectedRoute>
+    ),
   },
 
+  // ── Chief Warden ───────────────────────────────────────────────
+  {
+    path: "/chief-warden",
+    errorElement: <ErrorPage />,
+    element: (
+      <ProtectedRoute allowedRoles={["chief-warden"]}>
+        <ChiefWardenAllocationPage />
+      </ProtectedRoute>
+    ),
+  },
+
+  // ── Logs (warden+ only) ────────────────────────────────────────
   {
     path: "/logs",
-    element: <LogsPage />,
     errorElement: <ErrorPage />,
+    element: (
+      <ProtectedRoute allowedRoles={["admin", "warden", "chief-warden"]}>
+        <LogsPage />
+      </ProtectedRoute>
+    ),
   },
-  {
-    path: "*",
-    element: <ErrorPage />,
-  },
+
+  { path: "*", element: <ErrorPage /> },
 ]);
 
 /* ================= RENDER ================= */
