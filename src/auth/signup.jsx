@@ -21,120 +21,81 @@ function Signup() {
   const navigate =
     useNavigate();
 
-  /* ================= STATE ================= */
+  const [hostels, setHostels] = useState([]);
+  const [rooms, setRooms] = useState([]);
+  const [isRoomDropdownOpen, setIsRoomDropdownOpen] = useState(false);
 
-  const [hostels, setHostels] =
-    useState([]);
-
-  const [formData, setFormData] =
-    useState({
-
-      name: "",
-
-      email: "",
-
-      password: "",
-
-      confirmPassword: "",
-
-      phone: "",
-
-      hostel: "",
-
-      room: "",
-
-      department: "",
-
-      rollno: "",
-      
-      degree_type: "",
-      
-      academic_year: "",
-
-      role: "student",
-    });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phone: "",
+    hostel: "",
+    room: "",
+    role: "student",
+  });
 
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const [loading, setLoading] =
-  useState(false);
-
-const [acceptedPrivacy, setAcceptedPrivacy] =
-  useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
 
   /* ================= FLAGS ================= */
 
-  const isStudent =
-    formData.role === "student";
+  const isStudent = formData.role === "student";
+  const showHostelField = formData.role === "student" || formData.role === "attendant";
 
-  const showHostelField =
-    formData.role === "student" ||
-    formData.role === "attendant";
-
-  /* ================= HOSTELS ================= */
+  /* ================= HOSTELS & ROOMS ================= */
 
   useEffect(() => {
-
     async function fetchHostels() {
-
       try {
-
-        const data =
-          await apiFetch(
-            "/api/hostels"
-          );
-
-        setHostels(
-          data.hostels ||
-          data.data ||
-          []
-        );
-
+        const data = await apiFetch("/api/hostels");
+        setHostels(data.hostels || data.data || []);
       } catch (err) {
-
-        console.error(
-          "Failed to fetch hostels:",
-          err
-        );
+        console.error("Failed to fetch hostels:", err);
       }
     }
-
     fetchHostels();
-
   }, []);
+
+  useEffect(() => {
+    if (!formData.hostel) {
+      setRooms([]);
+      return;
+    }
+    async function fetchRooms() {
+      try {
+        const data = await apiFetch(`/api/auth/rooms/${encodeURIComponent(formData.hostel)}`);
+        setRooms(data.rooms || []);
+      } catch (err) {
+        console.error("Failed to fetch rooms:", err);
+      }
+    }
+    fetchRooms();
+  }, [formData.hostel]);
 
   /* ================= HANDLE CHANGE ================= */
 
   const handleChange = (e) => {
-
     setFormData({
       ...formData,
-
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
   /* ================= REDIRECT ================= */
 
-  const getRedirectPath = (
-    role
-  ) => {
-
+  const getRedirectPath = (role) => {
     switch (role) {
-
       case "guard":
         return "/guard";
-
       case "attendant":
         return "/attendant";
       case "warden":
         return "/wardenhostel";
-
       case "student":
       default:
         return "/student";
@@ -143,103 +104,43 @@ const [acceptedPrivacy, setAcceptedPrivacy] =
 
   /* ================= SIGNUP ================= */
 
-  const handleSignup =
-    async (e) => {
+  const handleSignup = async (e) => {
+    e.preventDefault();
 
-      e.preventDefault();
-
-      if (isStudent) {
-
-        if (
-          !formData.name ||
-          !formData.email ||
-          !formData.password ||
-          !formData.confirmPassword ||
-          !formData.phone ||
-          !formData.hostel ||
-          !formData.room ||
-          !formData.department ||
-          !formData.rollno ||
-          !formData.degree_type ||
-          !formData.academic_year
-        ) {
-
-          setError(
-            "Please fill all fields"
-          );
-
-          return;
-        }
-
-      } else {
-
-        if (
-          !formData.name ||
-          !formData.email ||
-          !formData.phone ||
-          !formData.password ||
-          !formData.confirmPassword
-        ) {
-
-          setError(
-            "Please fill all fields"
-          );
-
-          return;
-        }
-
-        if (
-          showHostelField &&
-          !formData.hostel
-        ) {
-
-          setError(
-            "Please select a hostel"
-          );
-
-          return;
-        }
-      }
-
-      if (isStudent) {
-        if (
-          !validateStudentEmail(
-            formData.email,
-            formData.rollno
-          )
-        ) {
-          setError(
-            "Email must be in the format rollno@nith.ac.in"
-          );
-          return;
-        }
-      } else if (
-        !formData.email.endsWith(
-          "@nith.ac.in"
-        )
-      ) {
-
-        setError(
-          "Use your college email"
-        );
-
-        return;
-      }
-
+    if (isStudent) {
       if (
-        isStudent &&
-        formData.department &&
-        formData.rollno &&
-        !validateDepartmentRollNumber(
-          formData.department,
-          formData.rollno
-        )
+        !formData.email ||
+        !formData.password ||
+        !formData.confirmPassword ||
+        !formData.phone ||
+        !formData.hostel ||
+        !formData.room
       ) {
-        setError(
-          "Roll number does not match the selected department."
-        );
+        setError("Please fill all fields");
         return;
       }
+    } else {
+      if (
+        !formData.name ||
+        !formData.email ||
+        !formData.phone ||
+        !formData.password ||
+        !formData.confirmPassword
+      ) {
+        setError("Please fill all fields");
+        return;
+      }
+
+      if (showHostelField && !formData.hostel) {
+        setError("Please select a hostel");
+        return;
+      }
+    }
+
+    if (!formData.email.endsWith("@nith.ac.in")) {
+      setError("Use your college email ending in @nith.ac.in");
+      return;
+    }
 
       if (
         formData.password !==
@@ -538,16 +439,18 @@ payload = {
             </option>
 
           </select>
-          {/* ================= COMMON ================= */}
+          {/* ================= COMMON / ROLE INPUTS ================= */}
 
-          <input
-            type="text"
-            name="name"
-            placeholder="Full Name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full border border-gray-300 p-3 rounded-md mb-4 outline-none focus:border-[#5b0e0e]"
-          />
+          {!isStudent && (
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-3 rounded-md mb-4 outline-none focus:border-[#5b0e0e]"
+            />
+          )}
 
           <input
             type="email"
@@ -567,173 +470,75 @@ payload = {
             className="w-full border border-gray-300 p-3 rounded-md mb-4 outline-none focus:border-[#5b0e0e]"
           />
 
-          {/* ================= STUDENT ================= */}
-
-          {isStudent && (
-
-            <>
-
-              <select
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-                className="w-full border border-gray-300 p-3 rounded-md mb-4 outline-none focus:border-[#5b0e0e]"
-              >
-
-                <option value="">
-
-                  Select Department
-
-                </option>
-
-                <option value="ARCHITECTURE">
-
-                  Architecture
-
-                </option>
-
-                <option value="CHEMICAL ENGINEERING">
-
-                  Chemical Engineering
-
-                </option>
-
-                <option value="CE">
-
-                  Civil Engineering
-
-                </option>
-
-                <option value="CSE">
-
-                  Computer Science Engineering
-
-                </option>
-
-                <option value="DUAL DEGREE CSE">
-
-                  Dual Degree CSE
-
-                </option>
-
-                <option value="DUAL DEGREE ELECTRONICS">
-
-                  Dual Degree Electronics
-
-                </option>
-
-                <option value="EE">
-
-                  Electrical Engineering
-
-                </option>
-
-                <option value="ECE">
-
-                  Electronics & Communication Engineering
-
-                </option>
-
-                <option value="ENGINEERING PHYSICS">
-
-                  Engineering Physics
-
-                </option>
-
-                <option value="MNC">
-
-                  Mathematics & Computing
-
-                </option>
-
-                <option value="MATERIAL SCIENCE">
-
-                  Material Science
-
-                </option>
-
-                <option value="ME">
-
-                  Mechanical Engineering
-
-                </option>
-
-              </select>
-
-              <input
-                type="text"
-                name="rollno"
-                placeholder="Roll Number"
-                value={formData.rollno}
-                onChange={handleChange}
-                className="w-full border border-gray-300 p-3 rounded-md mb-4 outline-none focus:border-[#5b0e0e]"
-              />
-              
-              <select
-                name="degree_type"
-                value={formData.degree_type}
-                onChange={handleChange}
-                className="w-full border border-gray-300 p-3 rounded-md mb-4 outline-none focus:border-[#5b0e0e]"
-              >
-                <option value="">Select Degree Type</option>
-                <option value="B.Tech">B.Tech</option>
-                <option value="M.Tech">M.Tech</option>
-                <option value="B.Arch">B.Arch</option>
-                <option value="Ph.D">Ph.D</option>
-                <option value="Dual Degree">Dual Degree</option>
-              </select>
-
-              <input
-                type="text"
-                name="academic_year"
-                placeholder="Academic Year (e.g., 2022-2026)"
-                value={formData.academic_year}
-                onChange={handleChange}
-                className="w-full border border-gray-300 p-3 rounded-md mb-4 outline-none focus:border-[#5b0e0e]"
-              />
-
-              <input
-                type="text"
-                name="room"
-                placeholder="Room Number"
-                value={formData.room}
-                onChange={handleChange}
-                className="w-full border border-gray-300 p-3 rounded-md mb-4 outline-none focus:border-[#5b0e0e]"
-              />
-
-            </>
-          )}
-
           {/* ================= HOSTEL ================= */}
 
           {showHostelField && (
-
             <select
               name="hostel"
               value={formData.hostel}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+                setFormData((prev) => ({ ...prev, hostel: e.target.value, room: "" }));
+              }}
               className="w-full border border-gray-300 p-3 rounded-md mb-4 outline-none focus:border-[#5b0e0e]"
             >
-
-              <option value="">
-
-                Select Hostel
-
-              </option>
-
+              <option value="">Select Hostel</option>
               {hostels.map((hostel) => (
-
-                <option
-                  key={hostel.id || hostel.name}
-                  value={hostel.name}
-                >
-
+                <option key={hostel.id || hostel.name} value={hostel.name}>
                   {hostel.name}
-
                 </option>
               ))}
-
             </select>
+          )}
+
+          {/* ================= ROOM (SEARCHABLE & SCROLLABLE DROPDOWN) ================= */}
+
+          {isStudent && (
+            <div className="relative mb-4">
+              <input
+                type="text"
+                name="room"
+                placeholder={formData.hostel ? "Type or Select Room Number" : "Select Hostel First"}
+                value={formData.room}
+                disabled={!formData.hostel}
+                onFocus={() => setIsRoomDropdownOpen(true)}
+                onChange={(e) => {
+                  handleChange(e);
+                  setIsRoomDropdownOpen(true);
+                }}
+                className="w-full border border-gray-300 p-3 rounded-md outline-none focus:border-[#5b0e0e] disabled:bg-gray-100"
+              />
+              {isRoomDropdownOpen && formData.hostel && (
+                <div className="absolute left-0 right-0 top-full mt-1 max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg z-20">
+                  {rooms
+                    .filter((r) =>
+                      String(r.room_number || r)
+                        .toLowerCase()
+                        .includes(String(formData.room || "").toLowerCase())
+                    )
+                    .map((r) => {
+                      const roomVal = String(r.room_number || r);
+                      return (
+                        <div
+                          key={r.id || roomVal}
+                          onClick={() => {
+                            setFormData((prev) => ({ ...prev, room: roomVal }));
+                            setIsRoomDropdownOpen(false);
+                          }}
+                          className="p-2.5 hover:bg-[#5b0e0e] hover:text-white cursor-pointer text-sm"
+                        >
+                          Room {roomVal}
+                        </div>
+                      );
+                    })}
+                  {rooms.length === 0 && (
+                    <div className="p-2.5 text-xs text-gray-500 italic">
+                      Type room number directly if not listed
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           )}
 
           {/* ================= PASSWORD ================= */}
